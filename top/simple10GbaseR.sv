@@ -1,4 +1,5 @@
 import gtype::xgmii32_t;
+import gtype::xgmii64_t;
 
 module simple10GbaseR
 #(
@@ -11,7 +12,7 @@ module simple10GbaseR
     output wire serial_tx [NUM_TR-1:0]
 );
     
-localparam TYPE_TR[NUM_TR-1:0] = {"BASER","PMA","PMA"};
+localparam [NUM_TR-1:0] TYPE_TR_PMA = {1'b0,1'b1,1'b1};
 
 genvar i;
 
@@ -75,11 +76,18 @@ xgmii32_t xgmii_retransmit_32b32b_fifo_0to0_rx_w;
 wire      xgmii_retransmit_32b32b_fifo_0to0_clk_tx_w;
 xgmii32_t xgmii_retransmit_32b32b_fifo_0to0_tx_w;    
 xgmii32_t xgmii_retransmit_32b32b_fifo_0to0_tx_r;    
+
 wire      xgmii_retransmit_32b32b_fifo_0to1_clk_rx_w;
 xgmii32_t xgmii_retransmit_32b32b_fifo_0to1_rx_w;    
 wire      xgmii_retransmit_32b32b_fifo_0to1_clk_tx_w;
 xgmii32_t xgmii_retransmit_32b32b_fifo_0to1_tx_w;    
 xgmii32_t xgmii_retransmit_32b32b_fifo_0to1_tx_r;    
+
+wire      xgmii_retransmit_32b64b_fifo_0to2_clk_rx_w;
+xgmii32_t xgmii_retransmit_32b64b_fifo_0to2_rx_w;    
+wire      xgmii_retransmit_32b64b_fifo_0to2_clk_tx_w;
+xgmii64_t xgmii_retransmit_32b64b_fifo_0to2_tx_w;    
+xgmii64_t xgmii_retransmit_32b64b_fifo_0to2_tx_r;    
 
 wire clk_glbl_w;
 wire rst_glbl_w;
@@ -89,7 +97,7 @@ wire xgmii_rx_clk_w[NUM_TR-1:0];
 wire xgmii_tx_clk_w[NUM_TR-1:0];
 
 //////////////////////////////////////////////////////////////////////////
-assign clk_rst_tr_fpll_powerdown_w = tr_pma_wrapper_tr_fpll_pll_powerdown_w[1] | tr_pma_wrapper_tr_fpll_pll_powerdown_w[0];
+assign clk_rst_tr_fpll_powerdown_w = tr_baser_wrapper_tr_fpll_pll_powerdown_w[2] | tr_pma_wrapper_tr_fpll_pll_powerdown_w[1] | tr_pma_wrapper_tr_fpll_pll_powerdown_w[0];
 
 clk_rst clk_rst_u
 (
@@ -109,7 +117,7 @@ clk_rst clk_rst_u
 
 //////////////////////////////////////////////////////////////////////////
 for (i=0;i<NUM_TR;i=i+1) begin : TR
-    if (TYPE_TR[i]=="PMA") begin : PMA
+    if (TYPE_TR_PMA[i]==1'b1) begin : PMA
         assign tr_pma_wrapper_clk_glbl_w              [i]= clk_glbl_w              ;
         assign tr_pma_wrapper_rst_glbl_w              [i]= rst_glbl_w              ;
         assign tr_pma_wrapper_refclk_w                [i]= ref_clk                 ;
@@ -144,7 +152,7 @@ for (i=0;i<NUM_TR;i=i+1) begin : TR
         assign xgmii_tx_clk_w [i] = tr_pma_wrapper_pma_tx_clk_w[i];
         assign serial_tx      [i] = tr_pma_wrapper_tx_serial_w [i];
     end
-    else if (TYPE_TR[i]=="BASER") begin : BASER
+    else begin : BASER
         assign tr_baser_wrapper_clk_glbl_w              [i]= clk_glbl_w;
         assign tr_baser_wrapper_rst_glbl_w              [i]= rst_glbl_w;
         assign tr_baser_wrapper_clk_156_w               [i]= clk_156_w;
@@ -154,30 +162,30 @@ for (i=0;i<NUM_TR;i=i+1) begin : TR
         assign tr_baser_wrapper_tr_fpll_pll_locked_w    [i]= clk_rst_tr_fpll_pll_locked_w    ;
         assign tr_baser_wrapper_tr_fpll_tx_serial_clk_w [i]= clk_rst_tr_fpll_tx_serial_clk_w ;
         assign tr_baser_wrapper_tr_fpll_pll_cal_busy_w  [i]= clk_rst_tr_fpll_pll_cal_busy_w  ;
-        assign tr_baser_wrapper_xgmii_tx_w              [i]= ;
+        assign tr_baser_wrapper_xgmii_tx_w              [i]= xgmii_retransmit_32b64b_fifo_0to2_tx_r;
 
         tr_baser_wrapper tr_baser_wrapper_u
         (
-            .clk_glbl              ( tr_baser_wrapper_clk_glbl_w             ),//input
-            .rst_glbl              ( tr_baser_wrapper_rst_glbl_w             ),//input
-            .clk_156               ( tr_baser_wrapper_clk_156_w              ),//input
-            .rst_156               ( tr_baser_wrapper_rst_156_w              ),//input
-            .refclk                ( tr_baser_wrapper_refclk_w               ),//input
-            .rx_serial             ( tr_baser_wrapper_rx_serial_w            ),//input
-            .tx_serial             ( tr_baser_wrapper_tx_serial_w            ),//output
-            .tr_fpll_pll_powerdown ( tr_baser_wrapper_tr_fpll_pll_powerdown_w),//output
-            .tr_fpll_pll_locked    ( tr_baser_wrapper_tr_fpll_pll_locked_w   ),//input
-            .tr_fpll_tx_serial_clk ( tr_baser_wrapper_tr_fpll_tx_serial_clk_w),//input
-            .tr_fpll_pll_cal_busy  ( tr_baser_wrapper_tr_fpll_pll_cal_busy_w ),//input
-            .xgmii_tx              ( tr_baser_wrapper_xgmii_tx_w             ),//input
-            .xgmii_tx_rdy          ( tr_baser_wrapper_xgmii_tx_rdy_w         ),//output
-            .xgmii_tx_clk          ( tr_baser_wrapper_xgmii_tx_clk_w         ),//output
-            .xgmii_tx_rst          ( tr_baser_wrapper_xgmii_tx_rst_w         ),//output
-            .xgmii_rx              ( tr_baser_wrapper_xgmii_rx_w             ),//output
-            .xgmii_rx_rdy          ( tr_baser_wrapper_xgmii_rx_rdy_w         ),//output
-            .xgmii_rx_clk          ( tr_baser_wrapper_xgmii_rx_clk_w         ),//output
-            .xgmii_rx_rst          ( tr_baser_wrapper_xgmii_rx_rst_w         ),//output
-            .rx_sync               ( tr_baser_wrapper_rx_sync_w              ) //output
+            .clk_glbl              ( tr_baser_wrapper_clk_glbl_w             [i]),//input
+            .rst_glbl              ( tr_baser_wrapper_rst_glbl_w             [i]),//input
+            .clk_156               ( tr_baser_wrapper_clk_156_w              [i]),//input
+            .rst_156               ( tr_baser_wrapper_rst_156_w              [i]),//input
+            .refclk                ( tr_baser_wrapper_refclk_w               [i]),//input
+            .rx_serial             ( tr_baser_wrapper_rx_serial_w            [i]),//input
+            .tx_serial             ( tr_baser_wrapper_tx_serial_w            [i]),//output
+            .tr_fpll_pll_powerdown ( tr_baser_wrapper_tr_fpll_pll_powerdown_w[i]),//output
+            .tr_fpll_pll_locked    ( tr_baser_wrapper_tr_fpll_pll_locked_w   [i]),//input
+            .tr_fpll_tx_serial_clk ( tr_baser_wrapper_tr_fpll_tx_serial_clk_w[i]),//input
+            .tr_fpll_pll_cal_busy  ( tr_baser_wrapper_tr_fpll_pll_cal_busy_w [i]),//input
+            .xgmii_tx              ( tr_baser_wrapper_xgmii_tx_w             [i]),//input
+            .xgmii_tx_rdy          ( tr_baser_wrapper_xgmii_tx_rdy_w         [i]),//output
+            .xgmii_tx_clk          ( tr_baser_wrapper_xgmii_tx_clk_w         [i]),//output
+            .xgmii_tx_rst          ( tr_baser_wrapper_xgmii_tx_rst_w         [i]),//output
+            .xgmii_rx              ( tr_baser_wrapper_xgmii_rx_w             [i]),//output
+            .xgmii_rx_rdy          ( tr_baser_wrapper_xgmii_rx_rdy_w         [i]),//output
+            .xgmii_rx_clk          ( tr_baser_wrapper_xgmii_rx_clk_w         [i]),//output
+            .xgmii_rx_rst          ( tr_baser_wrapper_xgmii_rx_rst_w         [i]),//output
+            .rx_sync               ( tr_baser_wrapper_rx_sync_w              [i]) //output
         );
 
         assign xgmii_rx_clk_w [i] = tr_baser_wrapper_xgmii_rx_clk_w[i];
@@ -189,7 +197,7 @@ end
 
 //////////////////////////////////////////////////////////////////////////
 for (i=0;i<NUM_TR;i=i+1) begin : PCSRX
-    if (TYPE_TR[i]=="PMA") begin : PMA
+    if (TYPE_TR_PMA[i]==1'b1) begin : PMA
     assign pcs_rx_32b_clk_w      [i]= xgmii_rx_clk_w[i]; 
     assign pcs_rx_32b_rst_w      [i]= 0;
     assign pcs_rx_32b_pma_data_w [i]= tr_pma_wrapper_pma_rx_w[i];
@@ -209,7 +217,7 @@ end
 
 //////////////////////////////////////////////////////////////////////////
 for (i=0;i<NUM_TR;i=i+1) begin : PCSTX
-    if (TYPE_TR[i]=="PMA") begin : PMA
+    if (TYPE_TR_PMA[i]==1'b1) begin : PMA
     assign pcs_tx_32b_clk_w      [i]= xgmii_tx_clk_w[i];
     assign pcs_tx_32b_rst_w      [i]= 0;
     assign pcs_tx_32b_xgmii_tx_w [i]= (i==0) ? xgmii_retransmit_32b32b_fifo_0to0_tx_r : xgmii_retransmit_32b32b_fifo_0to1_tx_r;
@@ -253,6 +261,21 @@ xgmii_retransmit_32b32b_fifo xgmii_retransmit_32b32b_fifo_0to1_u
     .tx     (xgmii_retransmit_32b32b_fifo_0to1_tx_w    )
 );
 always @(posedge xgmii_retransmit_32b32b_fifo_0to1_clk_tx_w) xgmii_retransmit_32b32b_fifo_0to1_tx_r <= xgmii_retransmit_32b32b_fifo_0to1_tx_w;
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+assign xgmii_retransmit_32b64b_fifo_0to2_clk_rx_w = xgmii_rx_clk_w       [0];
+assign xgmii_retransmit_32b64b_fifo_0to2_rx_w     = pcs_rx_32b_xgmii_rx_w[0];
+assign xgmii_retransmit_32b64b_fifo_0to2_clk_tx_w = xgmii_tx_clk_w       [2];
+
+xgmii_retransmit_32b64b_fifo xgmii_retransmit_32b64b_fifo_0to2_u
+(
+    .clk_rx (xgmii_retransmit_32b64b_fifo_0to2_clk_rx_w),
+    .rx     (xgmii_retransmit_32b64b_fifo_0to2_rx_w    ),
+    .clk_tx (xgmii_retransmit_32b64b_fifo_0to2_clk_tx_w),
+    .tx     (xgmii_retransmit_32b64b_fifo_0to2_tx_w    )
+);
+always @(posedge xgmii_retransmit_32b64b_fifo_0to2_clk_tx_w) xgmii_retransmit_32b64b_fifo_0to2_tx_r <= xgmii_retransmit_32b64b_fifo_0to2_tx_w;
 ////////////////////////////////////////////////////////////////////////////////
 
 endmodule
