@@ -3,6 +3,7 @@ SRC = \
 	../lib/gtype.sv \
 	../lib/sync.sv \
 	../ip/fifo_xgmii_retransmit_32b32b/fifo_xgmii_retransmit_32b32b_bb.v \
+	../ip/fifo_xgmii_retransmit_64b64b/fifo_xgmii_retransmit_64b64b_bb.v \
 	../ip/pll_644_156/pll_644_156_bb.v \
 	../ip/tr_10g_baser/tr_10g_baser_bb.v \
 	../ip/tr_10g_pma/tr_10g_pma_bb.v \
@@ -15,6 +16,7 @@ SRC = \
 	../lib/tr_pma_wrapper/tr_pma_wrapper.sv \
 	../lib/decoder_rx_32b/decoder_rx_32b.sv \
 	../lib/xgmii_retransmit_32b32b_fifo/xgmii_retransmit_32b32b_fifo.sv \
+	../lib/xgmii_retransmit_32b64b_fifo/xgmii_retransmit_32b64b_fifo.sv \
 	../lib/pcs_rx_32b/pcs_rx_32b.sv \
 	../lib/gearbox_tx_32b/gearbox_tx_32b.sv \
 	../lib/align_rx_32b/align_rx_32b.sv \
@@ -24,5 +26,5 @@ SRC = \
 	../top/simple10GbaseR.sv
 
 lint:
-	verilator --lint-only -Wall -Wpedantic -Wno-EOFNEWLINE $(SRC) --top-module simple10GbaseR cfg.vlt
+	verilator --lint-only --waiver-output cfg_tmp.vlt -Wall -Wpedantic -Wno-EOFNEWLINE $(SRC) --top-module simple10GbaseR cfg.vlt
 
