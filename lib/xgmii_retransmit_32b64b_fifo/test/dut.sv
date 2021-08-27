@@ -14,10 +14,8 @@ module dut
 localparam SIMULATION = 1;
 
 wire      xgmii_retransmit_32b64b_fifo_clk_rx_w;
-wire      xgmii_retransmit_32b64b_fifo_rst_rx_w;
 xgmii32_t xgmii_retransmit_32b64b_fifo_rx_w;    
 wire      xgmii_retransmit_32b64b_fifo_clk_tx_w;
-wire      xgmii_retransmit_32b64b_fifo_rst_tx_w;
 xgmii64_t xgmii_retransmit_32b64b_fifo_tx_w;    
 
 //////////////////////////////////////////////////////////////////////////
@@ -34,19 +32,15 @@ assign Rx.ena  = xgmii_retransmit_32b64b_fifo_tx_w.ena ;
 
 ////////////////////////////////////////////////////////////////////////////////
 assign xgmii_retransmit_32b64b_fifo_clk_rx_w = clk_tx;
-assign xgmii_retransmit_32b64b_fifo_rst_rx_w = rst_tx;
 assign xgmii_retransmit_32b64b_fifo_rx_w     = {Tx.ena,Tx.ctrl,Tx.data};
 assign xgmii_retransmit_32b64b_fifo_clk_tx_w = clk_rx;
-assign xgmii_retransmit_32b64b_fifo_rst_tx_w = rst_rx;
 
 xgmii_retransmit_32b64b_fifo xgmii_retransmit_32b64b_fifo_u
 (
-    .clk_32 (xgmii_retransmit_32b64b_fifo_clk_rx_w),
-    .rst_32 (xgmii_retransmit_32b64b_fifo_rst_rx_w),
-    .clk_64 (xgmii_retransmit_32b64b_fifo_clk_tx_w),
-    .rst_64 (xgmii_retransmit_32b64b_fifo_rst_tx_w),
-    .xgmii32(xgmii_retransmit_32b64b_fifo_rx_w    ),
-    .xgmii64(xgmii_retransmit_32b64b_fifo_tx_w    )
+    .clk_rx (xgmii_retransmit_32b64b_fifo_clk_rx_w),
+    .clk_tx (xgmii_retransmit_32b64b_fifo_clk_tx_w),
+    .rx     (xgmii_retransmit_32b64b_fifo_rx_w    ),
+    .tx     (xgmii_retransmit_32b64b_fifo_tx_w    )
 );
 ////////////////////////////////////////////////////////////////////////////////
 
