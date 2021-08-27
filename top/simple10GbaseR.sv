@@ -102,7 +102,7 @@ assign clk_rst_tr_fpll_powerdown_w = tr_baser_wrapper_tr_fpll_pll_powerdown_w[2]
 clk_rst clk_rst_u
 (
     .clk                   (sys_clk                         ),//input  
-    .rst                   (0                               ),//input
+    .rst                   (1'b0                            ),//input
     .clk_glbl              (clk_glbl_w                      ),//output
     .rst_glbl              (rst_glbl_w                      ),//output
     .clk_156               (clk_156_w                       ),//output
