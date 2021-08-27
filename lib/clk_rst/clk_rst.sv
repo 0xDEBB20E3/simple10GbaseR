@@ -86,7 +86,7 @@ pll_644_156 pll_644_156_u
 );
 
 assign clk_156 = pll_644_156_outclk0_w;
-sync #(.LENGHT(2),.INIT(1)) (.clk(clk_156),.in(!pll_644_156_pll_locked_w),.out(rst_156));    
+sync #(.LENGHT(2),.INIT(1)) sync_rst_156_u (.clk(clk_156),.in(!pll_644_156_pll_locked_w),.out(rst_156));    
 ////////////////////////////////////////////////////////////////////////////////
 
 endmodule
