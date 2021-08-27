@@ -104,7 +104,7 @@ always @(posedge clk_tx) begin
     end 
 end 
 
-always @(posedge clk_tx) cnt_r <= (cnt_r==32) ? (0) : (cnt_r + 1);
+always @(posedge clk_tx) cnt_r <= (cnt_r==6'd32) ? (6'd0) : (cnt_r + 6'd1);
 
 always @(posedge clk_tx) tx_r.data  <= fifo_xgmii_retransmit_32b32b_rdreq_w ? (fifo_xgmii_retransmit_32b32b_q_w[31: 0]) : (32'h07070707);
 always @(posedge clk_tx) tx_r.ctrl  <= fifo_xgmii_retransmit_32b32b_rdreq_w ? (fifo_xgmii_retransmit_32b32b_q_w[35:32]) : (4'b1111);

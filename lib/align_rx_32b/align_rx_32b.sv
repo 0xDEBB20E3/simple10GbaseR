@@ -20,7 +20,7 @@ wire [31:0] dout_w;
 wire        even_w;
 wire [1:0]  ctrl_w;
 
-always @(posedge clk) if (cnt_r!=32) begin cnt_r <= cnt_r + 1; end else begin cnt_r <= 0; end
+always @(posedge clk) if (cnt_r!=6'd32) begin cnt_r <= cnt_r + 6'd1; end else begin cnt_r <= 6'd0; end
 always @(posedge clk) din_r  <= din;
 always @(posedge clk) dout_en_zero_r <= (cnt_r==31);
 always @(posedge clk) dout_en_r <= (rst==0) & (!dout_en_zero_r) ;
