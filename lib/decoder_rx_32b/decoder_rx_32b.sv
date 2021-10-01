@@ -1,3 +1,8 @@
+// MIT License
+// Copyright (c) 2021 0xDEBB20E3, 0xDEBB20E3@gmail.com  
+// git@github.com:0xDEBB20E3/simple10GbaseR.git
+
+
 module decoder_rx_32b
 (
     input wire clk,

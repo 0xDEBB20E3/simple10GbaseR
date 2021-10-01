@@ -1,3 +1,8 @@
+// MIT License
+// Copyright (c) 2021 0xDEBB20E3, 0xDEBB20E3@gmail.com  
+// git@github.com:0xDEBB20E3/simple10GbaseR.git
+
+
 import gtype::xgmii32_t;
 
 module pcs_tx_32b

@@ -1,3 +1,8 @@
+// MIT License
+// Copyright (c) 2021 0xDEBB20E3, 0xDEBB20E3@gmail.com  
+// git@github.com:0xDEBB20E3/simple10GbaseR.git
+
+
 `ifndef PCAP_GENERATOR__SV
 `define PCAP_GENERATOR__SV
 
